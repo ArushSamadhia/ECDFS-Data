@@ -1,0 +1,15 @@
+# %ECSV 1.0
+# ---
+# datatype:
+# - {name: PNT, datatype: int32}
+# - {name: Epoch, datatype: int32}
+# - {name: MJD, datatype: int32}
+# - {name: Flux D, datatype: float64}
+# - {name: Flux D Err, datatype: float64}
+# schema: astropy-2.0
+PNT Epoch MJD "Flux D" "Flux D Err"
+6 1 54282 0.01167 9e-06
+2 1 54266 0.015306 1.2e-05
+3 1 54275 0.004646 9e-06
+4 1 54276 0.002874 1.7e-05
+5 1 54287 0.004826 9e-06
