@@ -18,8 +18,8 @@ path = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_Dates/Epoch1.e
 path_err = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_error/Epoch_err1.ecsv"
 file = ascii.read(path, delimiter = ' ')
 file_err = ascii.read(path_err, delimiter = ' ')
-sample = file[8]
-sample_err = file_err[8]
+sample = file[0]
+sample_err = file_err[0]
 ra1 = sample['RA']
 dec1 = sample['DEC']
 c1 = SkyCoord(ra1, dec1, frame='icrs', unit='deg')
