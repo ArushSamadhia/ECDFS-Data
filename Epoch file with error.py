@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat Jul 30 16:29:11 2022
+Created on Wed Aug  3 15:06:09 2022
 
 @author: samad
 """
@@ -13,6 +13,9 @@ from astropy import units as u
 import pandas as pd
 import numpy as np
 from astropy.table import join, Table, hstack
+
+path = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Dates.txt"
+date = ascii.read(path, delimiter = ' ')
 
 def mapping(a):
     print('Epoch'+str(a))
@@ -34,8 +37,14 @@ def mapping(a):
         if len(ref_catalog)<length: 
             ref = ref_catalog
             ref_path = path
+            ref_i = i
+            ref_a = a
             length = len(ref_catalog)
-        
+    for j in range(len(date)):
+        if date['col2'][j] == str(ref_i)+'_'+str(ref_a):
+            ref_date = date['col1'][j]
+            
+    #print(ref_path)    
     #print(ref)
     ref_cat = ref['col4','col5','col10']
     ref_cat_err = ref['col4','col5','col11']
@@ -51,6 +60,7 @@ def mapping(a):
     radius = 1/3600
     n=2
     for i in range(d,7,e):
+        #print(i)
         
         path1 = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Data/PNT"+str(i)+"_"+str(a)+".ecsv"
         cat1 = ascii.read(path1, delimiter=' ')
@@ -72,18 +82,25 @@ def mapping(a):
         j = 'col10'
         ind = (s2)
             #print(ind)
-            
+        for k in range(len(date)):
+            if date['col2'][k] == str(i)+'_'+str(a):
+                d_o = date['col1'][k]
+        
         ind2 = ((cat_1[j][match_index][ind]>0) & (ref_cat['peak1'][ind]>0))
         ind2_err = ((cat_1_err['col11'][match_index][ind]>0) & (ref_cat_err['peak1_err'][ind]>0))
         b1 = cat_1[match_index][ind][ind2]
         b1_err = cat_1_err[match_index][ind][ind2_err]
-        b1.rename_column('col10', 'peak'+str(n))
-        b1_err.rename_column('col11', 'peak'+str(n))
+        b1.rename_column('col10', d_o)
+        b1_err.rename_column('col11', d_o)
             #print(b1)
-        b11 = b1['peak'+str(n)]
-        b11_err = b1_err['peak'+str(n)]
+        b11 = b1[d_o]
+        b11_err = b1_err[d_o]
         b2 = ref_cat[ind][ind2]
         b2_err = ref_cat_err[ind][ind2_err]
+        b2.rename_column('peak1', ref_date)
+        b2_err.rename_column('peak1_err', ref_date)
+        
+        
         if i == 1 or (i==2 and (a==1 or a==9)) :
                 if path1 == ref_path:
                     final= Table()
@@ -92,24 +109,25 @@ def mapping(a):
                 else:
                     final = hstack([b2,b11])
                     final_err = hstack([b2_err, b11_err])
-                    
         else:
                 if len(final) == 0:
                     final = hstack([b2,b11])
-                    final = hstack([b2_err, b11_err])
+                    final_err = hstack([b2_err, b11_err])
                 else:
                     if path1 != ref_path:
                         final = hstack([final,b11])
                         final_err = hstack([final_err, b11_err])
+        if a == 4:
+            print(b2_err)
+            print(final_err)
         n+=1
             #print(final)
     final.rename_column('col4', 'RA')
     final.rename_column('col5', 'DEC')
     final_err.rename_column('col4', 'RA')
     final_err.rename_column('col5', 'DEC')
-    print(final_err)
-    
-    final_err.write("C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_error/Final_Output_"+str(a)+".ecsv",overwrite= True)
+  
+    final_err.write("C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_error/Epoch_err"+str(a)+".ecsv",overwrite= True)
         
 for m in range(1,10):        
    mapping(m)
