@@ -21,12 +21,17 @@ path_err = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_error/Epoc
 file = ascii.read(path, delimiter = ' ')
 file_err = ascii.read(path_err, delimiter = ' ')
 sample = file[0]
+#print(sample)
 sample_err = file_err[0]
 ra1 = sample['RA']
 dec1 = sample['DEC']
 c1 = SkyCoord(ra1, dec1, frame='icrs', unit='deg')
 radius= 1/3600
-
+RA1 = []
+DEC1= []
+for r in range(len(sample)-2):
+    RA1.append(sample['RA'])
+    DEC1.append(sample['DEC'])
 final = Table()
 for i in range(1,10):
     p = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_Dates/Epoch"+str(i)+".ecsv"
@@ -44,16 +49,23 @@ for i in range(1,10):
     #print(match_index)
     RA = ep['RA']
     DEC = ep['DEC']
+    
+    cat = ep[match_index]
+    cat_err = ep_err[match_index]
+    #print(i)
+    #print(cat)
+    #print(len(cat))
+    for q in (d2d<radius*u.deg):
+        if q == True:
+            for r in range(len(cat)-2):
+                RA1.append(cat['RA'])
+                DEC1.append(cat['DEC'])
     del ep['RA']
     del ep['DEC']
     del ep_err['RA']
     del ep_err['DEC']
-    cat = ep[match_index]
-    cat_err = ep_err[match_index]
-    #print(cat)
-    
-    for i in (d2d<radius*u.deg):
-        if i == True:
+    for q in (d2d<radius*u.deg):
+        if q == True:
             sample = hstack([sample, cat])
             sample_err = hstack([sample_err, cat_err])
 #print(sample_err)
@@ -61,6 +73,8 @@ del sample['RA']
 del sample['DEC']
 del sample_err['RA']
 del sample_err['DEC']
+#print(RA1)
+#print(DEC1)
 date_j = []
 peaks = []
 peaks_err = []
@@ -85,9 +99,13 @@ curve['PNT'] = pnt
 curve['Epoch'] = epoch
 curve['MJD'] = date_j
 
-curve = hstack([curve, RA])
-curve = hstack([curve, DEC])
+curve = hstack([curve, RA1])
+curve = hstack([curve, DEC1])
+#print(curve)
+curve.rename_column('col0_1','RA1')
+curve.rename_column('col0_2','DEC1')
 CF = []
+distance = []
 for o in range(len(curve)):
     if curve['PNT'][o] == 1:
         rac = coord['RA'][0]
@@ -107,25 +125,27 @@ for o in range(len(curve)):
     elif curve['PNT'][o] == 6:
         rac = coord['RA'][5]
         decc = coord['DEC'][5]
-    C1 = SkyCoord(curve['RA'][o], curve['DEC'][o], frame = 'icrs', unit = 'deg')
+    C1 = SkyCoord(curve['RA1'][o], curve['DEC1'][o], frame = 'icrs', unit = 'deg')
     C2 = SkyCoord(rac, decc, frame = 'icrs', unit = 'deg')
-    off = C2.position_angle(C1).to(u.deg) 
+    off = C2.separation(C1) 
     offset = off.arcminute
     F_GHz=1.4
     G1,G2,G3 = -1.343e-3, 6.579e-7, -1.186e-10 # VLA at 1.465 GHz
     X = offset * F_GHz
     beam = 1 + G1*X**2 + G2*X**4 + G3*X**6
     CF.append(beam)
+    distance.append(offset)
 for p in range(len(curve)):
     peaks[p]/=CF[p]
     peaks_err[p]/=CF[p]
 curve['Flux D'] = peaks
 curve['Error'] = peaks_err
+curve['Dist_ArcMin'] = distance
 #print(CF)
 print(curve)
-curve.write("C:/Users/samad/OneDrive/Desktop/KMooley Internship/Light_Curve.ecsv", overwrite = True)
-plt.scatter(date_j, peaks)
-plt.errorbar(date_j, peaks, yerr=peaks_err, fmt="o")
+curve.write("C:/Users/samad/OneDrive/Desktop/KMooley Internship/Light_Curve_CF.ecsv", overwrite = True)
+#plt.scatter(date_j, peaks)
+#plt.errorbar(date_j, peaks, yerr=peaks_err, fmt="o")
     
 
 
