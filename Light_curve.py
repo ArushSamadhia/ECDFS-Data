@@ -125,8 +125,8 @@ for o in range(len(curve)):
     elif curve['PNT'][o] == 6:
         rac = coord['RA'][5]
         decc = coord['DEC'][5]
-    C1 = SkyCoord(curve['RA1'][o], curve['DEC1'][o], frame = 'icrs', unit = 'deg')
-    C2 = SkyCoord(rac, decc, frame = 'icrs', unit = 'deg')
+    C1 = SkyCoord(curve['RA1'][o], curve['DEC1'][o], unit=(u.hourangle, u.deg))
+    C2 = SkyCoord(rac, decc, unit=(u.hourangle, u.deg))
     off = C2.separation(C1) 
     offset = off.arcminute
     F_GHz=1.4
@@ -141,6 +141,7 @@ for p in range(len(curve)):
 curve['Flux D'] = peaks
 curve['Error'] = peaks_err
 curve['Dist_ArcMin'] = distance
+curve['CF'] = CF
 #print(CF)
 print(curve)
 curve.write("C:/Users/samad/OneDrive/Desktop/KMooley Internship/Light_Curve_CF.ecsv", overwrite = True)
