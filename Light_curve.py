@@ -20,7 +20,7 @@ path = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Updated Epochs/Epoch1
 #path_err = "C:/Users/samad/OneDrive/Desktop/KMooley Internship/Epochs_error/Epoch_err1.ecsv"
 file = ascii.read(path, delimiter = ' ')
 #file_err = ascii.read(path_err, delimiter = ' ')
-sample = file[0]
+sample = file[32]
 #print(sample)
 #sample_err = file_err[0]
 ra1 = sample['RA']
@@ -209,7 +209,6 @@ PEAKS4 = []
 PEAKS5 = []
 PEAKS6 = []
 for x in range(len(date_j)):
-    if float(peaks[x]) > 0.01:
         
         if int(pnt[x]) == 1:
             DATE1.append(int(x))
